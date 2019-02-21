@@ -70,7 +70,7 @@ $$
 对式(2.4)求偏导数化简得到如下：  
 
 $$
-\frac{\partial{C}}{\partial{w}} = \frac{1}{n} \sum\limits_{x} x_j)(sigmoid(z) - y) \tag*{2.5}
+\frac{\partial{C}}{\partial{w}} = \frac{1}{n} \sum\limits_{x} x_j(sigmoid(z) - y) \tag*{2.5}
 $$
 
 这是⼀个优美的公式。它告诉我们权重学习的速度受到 $sigmoid(z) − y$，也就是输出中的误差的控
@@ -90,6 +90,9 @@ $$
 ```
 在模型编译时我们采用sgd(随机梯度优化)和交叉熵损失函数，在5轮后达到test_acc: 0.9133的准确率，这个数字并不是很好，keras提供了其他更为优秀的优化器可以在同样训练次数的情况下达到更高的准确率。
 
+![2019-02-21-09-36-11](http://www.xdpie.com/2019-02-21-09-36-11.png)
 
 
 
+
+![2019-02-21-09-36-24](http://www.xdpie.com/2019-02-21-09-36-24.png)

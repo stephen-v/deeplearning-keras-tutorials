@@ -2,7 +2,7 @@ from keras.datasets import mnist
 from keras import models
 from keras import layers
 from keras.utils import plot_model, to_categorical
-
+import matplotlib.pyplot as plt
 
 def get_model():
     """
@@ -35,6 +35,25 @@ if __name__ == '__main__':
                     loss='categorical_crossentropy',
                     metrics=['accuracy'])
     train_images, test_images, train_labels, test_labels = preprocess()
-    network.fit(train_images, train_labels, epochs=5, batch_size=128)
+    history=network.fit(train_images, train_labels, epochs=5, batch_size=128,verbose=1,validation_split=0.01)
     test_loss, test_acc = network.evaluate(test_images, test_labels)
+
+    # Plot training & validation accuracy values
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
     print('test_acc:', test_acc)
