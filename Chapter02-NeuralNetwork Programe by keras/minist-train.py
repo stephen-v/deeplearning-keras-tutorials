@@ -1,8 +1,9 @@
 from keras.datasets import mnist
-from keras import models
+from keras import models, regularizers
 from keras import layers
 from keras.utils import plot_model, to_categorical
 import matplotlib.pyplot as plt
+
 
 def get_model():
     """
@@ -10,7 +11,8 @@ def get_model():
     :return: model
     """
     network = models.Sequential()
-    network.add(layers.Dense(512, activation='relu', input_shape=(28 * 28,)))
+    network.add(layers.Dense(512, activation='relu',
+                             input_shape=(28 * 28,)))
     network.add(layers.Dense(10, activation='softmax'))
 
     plot_model(network, show_layer_names=True, show_shapes=True, to_file='./plot_model.png')
@@ -35,7 +37,8 @@ if __name__ == '__main__':
                     loss='categorical_crossentropy',
                     metrics=['accuracy'])
     train_images, test_images, train_labels, test_labels = preprocess()
-    history=network.fit(train_images, train_labels, epochs=5, batch_size=128,verbose=1,validation_split=0.01)
+    history = network.fit(train_images, train_labels, epochs=20, batch_size=512,
+                          validation_data=(test_images, test_labels))
     test_loss, test_acc = network.evaluate(test_images, test_labels)
 
     # Plot training & validation accuracy values

@@ -84,15 +84,9 @@ $$
                     loss='categorical_crossentropy',
                     metrics=['accuracy'])
     train_images, test_images, train_labels, test_labels = preprocess()
-    network.fit(train_images, train_labels, epochs=5, batch_size=128)
+    network.fit(train_images, train_labels, epochs=50, batch_size=128)
     test_loss, test_acc = network.evaluate(test_images, test_labels)
     print('test_acc:', test_acc)
 ```
-在模型编译时我们采用sgd(随机梯度优化)和交叉熵损失函数，在5轮后达到test_acc: 0.9133的准确率，这个数字并不是很好，keras提供了其他更为优秀的优化器可以在同样训练次数的情况下达到更高的准确率。
+在模型编译时我们采用sgd(随机梯度优化)和交叉熵损失函数，在5轮后达到test_acc: 0.96113的准确率，这个数字并不是很好，keras提供了其他更为优秀的优化器可以在同样训练次数的情况下达到更高的准确率。
 
-![2019-02-21-09-36-11](http://www.xdpie.com/2019-02-21-09-36-11.png)
-
-
-
-
-![2019-02-21-09-36-24](http://www.xdpie.com/2019-02-21-09-36-24.png)
