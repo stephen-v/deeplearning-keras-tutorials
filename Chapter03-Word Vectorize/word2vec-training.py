@@ -1,14 +1,17 @@
-from keras import Sequential, Input, Model
-from keras.layers import Embedding, Flatten, Dense, Dot, Activation, Reshape
+from keras import Sequential, Input, Model, optimizers
+from keras.layers import Embedding, Flatten, Dense, Dot, Activation, Reshape, Concatenate
+from keras.utils import plot_model
 from keras_preprocessing import sequence
 from keras_preprocessing.sequence import skipgrams
 from keras_preprocessing.text import Tokenizer
 import numpy as np
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 
-window_size = 5
-vector_dim = 20
-vocab_size = 10000
-epoch = 1
+window_size = 3
+vector_dim = 100
+vocab_size = 20000
+epoch = 5
 
 
 def collect_data():
@@ -39,24 +42,50 @@ def create_models():
     o = Activation('sigmoid')(o)
 
     model = Model(inputs=[w_inputs, c_inputs], outputs=o)
-    model.summary()
-    model.compile(loss='binary_crossentropy', optimizer='adam')
+
+    model.compile(optimizer=optimizers.RMSprop(lr=0.001),
+                  loss='binary_crossentropy',
+                  metrics=['accuracy'])
+    plot_model(model, show_layer_names=True, show_shapes=True, to_file='./plot_model.png')
     return model
 
 
 if __name__ == '__main__':
     sequences, word_index = collect_data()
     model = create_models()
-    for epoch_i in range(epoch):
-        loss = 0.
-        for i, doc in enumerate(sequences):
-            sampling_table = sequence.make_sampling_table(vocab_size)
-            data, labels = skipgrams(sequence=doc, vocabulary_size=vocab_size, window_size=5,
-                                     sampling_table=sampling_table)
-            x = [np.array(x) for x in zip(*data)]
-            y = np.array(labels, dtype=np.int32)
-            if x:
-                loss += model.train_on_batch(x, y)
-        print('epoch:%d , loss：%d' % (epoch_i, loss))
-    model.save_weights('../models/word2vec.model')
+    model.summary()
+    x, y = [], []
+    for i, doc in enumerate(sequences):
+        sampling_table = sequence.make_sampling_table(vocab_size)
+        data, labels = skipgrams(sequence=doc, vocabulary_size=vocab_size, window_size=window_size,
+                                 sampling_table=sampling_table)
+        x.extend(data)
+        y.extend(labels)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1)
+    x_train_input = [np.array(x) for x in zip(*x_train)]
+    x_test_input = [np.array(x) for x in zip(*x_test)]
+    history = model.fit(x_train_input, y_train, epochs=epoch, batch_size=32, validation_data=[x_test_input, y_test])
+    vectors = model.get_weights()[0]
+    with open('../models/word2vec.txt', 'w+') as f:
+        f.write('{} {}\n'.format(vocab_size - 1, vector_dim))
+        for word, i in word_index.items():
+            f.write('{} {}\n'.format(word, ' '.join(map(str, list(vectors[i, :])))))
+        f.close()
+    # Plot training & validation accuracy values
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
+    # Plot training & validation loss values
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
     print('training completed!')
