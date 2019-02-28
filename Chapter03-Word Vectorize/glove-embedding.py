@@ -7,7 +7,7 @@ from keras_preprocessing.sequence import pad_sequences
 from keras_preprocessing.text import Tokenizer
 
 max_len = 100  # 每条评论最多截取100个单词
-max_words = 10000  # 考虑数据集中最常见的10000个单词
+max_words = 20000
 embedding_dim = 100  # 词嵌入维度
 
 
@@ -42,7 +42,6 @@ def collect_data(texts, labels):
     sequences = tokenizer.texts_to_sequences(texts)
     word_index = tokenizer.word_index  # 最常见10000个词，词典
     print('Found %s unique tokens.' % len(word_index))
-
     data = pad_sequences(sequences, maxlen=max_len)  # 截取单词不足100的补足100
     labels = np.asarray(labels)
 

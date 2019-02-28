@@ -1,10 +1,7 @@
 from keras import models, optimizers, regularizers
 from keras.datasets import imdb
-from keras.preprocessing.text import Tokenizer
 import numpy as np
 from keras import layers
-from keras.utils.np_utils import to_categorical
-from keras.layers import Dense
 import matplotlib.pyplot as plt
 
 max_features = 10000
